@@ -1,6 +1,10 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+    "net/http"
+
+    "github.com/gin-gonic/gin"
+)
 
 func main() {
     // Initialize the Gin router
@@ -8,6 +12,12 @@ func main() {
 
     // No X-Forwarded-For business (yet)
     router.SetTrustedProxies(nil)
+
+    router.LoadHTMLFiles("index.html")
+
+    router.GET("/", func(c *gin.Context) {
+        c.HTML(http.StatusOK, "index.html", gin.H{})
+    })
 
     // Define a route handler for a toy public API
     router.GET("/api/v1/public", func(c *gin.Context) {

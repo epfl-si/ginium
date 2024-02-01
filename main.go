@@ -9,8 +9,8 @@ func main() {
     // No X-Forwarded-For business (yet)
     router.SetTrustedProxies(nil)
 
-    // Define a route handler for the root path
-    router.GET("/", func(c *gin.Context) {
+    // Define a route handler for a toy public API
+    router.GET("/api/v1/public", func(c *gin.Context) {
         c.JSON(200, gin.H{
             "message": "Hello, Gin!",
         })

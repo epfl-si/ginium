@@ -1,5 +1,87 @@
 <html>
+    <head>
+        <script src="https://unpkg.com/jquery@3.7.1/dist/jquery.min.js"></script>
+        <script src="https://unpkg.com/jquery-deparam@0.5.3/jquery-deparam.js"></script>
+        <script>
+         const oidcBase = "http://localhost:8080/realms/golang",
+               clientID = "hello_golang";
+
+         let bearer = null;
+
+         async function getOIDCConfig (oidcBase) {
+           const wellKnownResponse = await fetch(`${oidcBase}/.well-known/openid-configuration`);
+           return await wellKnownResponse.json();
+         }
+
+         function x_www_form_urlencoded (obj) {
+           return Object.keys(obj).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(obj[key])).join('&');
+         }
+
+         async function token (oidcBase, client_id, code, redirect_uri) {
+           const { token_endpoint } = await getOIDCConfig(oidcBase);
+           const tokenResponse = await fetch(
+             token_endpoint,
+             {
+               method: 'POST',
+               headers: {
+                 'Accept': 'application/json',
+                 'Content-Type': 'application/x-www-form-urlencoded',
+               },
+               body: x_www_form_urlencoded({
+                 grant_type: "authorization_code",
+                 client_id, code, redirect_uri
+               })
+             });
+           return (await tokenResponse.json());
+         }
+
+         $(async function() {
+           if (window.location.search) {
+             const params = $.deparam(window.location.search.slice(1));
+             const { code } = params;
+
+             delete params.state;
+             delete params.session_state;
+             delete params.iss;
+             delete params.code;
+
+             const newParams = $.param(params);
+             history.replaceState(null, null, window.location.pathname + (newParams ? '?' + newParams : ''));
+
+             const { access_token } = await token(oidcBase, clientID, code,
+                                                  window.location.href.split('?')[0]);
+             bearer = access_token;
+             $("a").replaceWith("You are logged in! (Reload the page to log out.)");
+           }
+         });
+
+         $(() => {
+           $("button#public").click(() => {
+             pump("/api/v1/public").then(dump);
+           });
+           $("button#private").click(() => {
+             pump("/api/v1/private").then(dump);
+           });
+           async function pump (uri) {
+             const headers = { Accept: 'application/json' };
+             if (bearer) {
+               headers.Authorization = `Bearer ${bearer}`;
+             }
+
+             const response = await fetch(uri, { headers });
+             return await response.json();
+           }
+           function dump (someObject) {
+             $("textarea#dump").val(JSON.stringify(someObject));
+           }
+         });
+        </script>
+    </head>
     <body>
         <h1>Hello Gin!</h1>
+        <p><a href="/login">Log in</a></p>
+        <button id="public">Public API</button>
+        <button id="private">Private API</button>
+        <textarea id="dump"></textarea>
     </body>
 </html>

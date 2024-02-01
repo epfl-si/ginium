@@ -1,5 +1,5 @@
 {
-  "realm" : "rails",
+  "realm" : "golang",
   "enabled" : true,
   "users" : [ {
     "username" : "demo",
@@ -16,26 +16,13 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "default-roles-rails" ],
+    "realmRoles" : [ "default-roles-golang" ],
     "notBefore" : 0,
     "groups" : [ ]
   } ],
   "clients" : [
     {
-      "clientId" : "graphiql/LoginButton",
-      "baseUrl" : "http://localhost:3000/",
-      "enabled" : true,
-      "redirectUris" : [ "*" ],
-      "webOrigins" : [ "*" ],
-      "standardFlowEnabled" : true,
-      "implicitFlowEnabled" : false,
-      "directAccessGrantsEnabled" : true,
-      "publicClient" : true,
-      "frontchannelLogout" : true,
-      "protocol" : "openid-connect"
-    },
-    {
-      "clientId" : "hello_rails",
+      "clientId" : "hello_golang",
       "baseUrl" : "http://localhost:3000/",
       "enabled" : true,
       "redirectUris" : [ "*" ],

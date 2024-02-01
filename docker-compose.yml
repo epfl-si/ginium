@@ -2,7 +2,7 @@
 # is *not* meant for production.
 
 version: '3'
-name: hellorails
+name: ginium
 
 services:
   # Keycloak is an OpenID-Connect IdP (Identity Provider) that is easy
